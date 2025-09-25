@@ -1,0 +1,94 @@
+{
+  "success": true,
+  "file_id": "0e56989f-9699-40a5-9295-ad65d61768b1",
+  "paper_type": "answer",
+  "processing_results": {
+    "page_analysis": {
+      "total_regions": 4,
+      "region_types": [
+        "question",
+        "answer",
+        "answer",
+        "answer"
+      ]
+    },
+    "ocr_results": {
+      "regions": [
+        {
+          "type": "answer",
+          "text": "\n        Q1-A: Regression Analysis\n        Given: n=10, \u03a3X=900, \u03a3Y=700, \u03a3X\u00b2=6360, \u03a3Y\u00b2=2860, \u03a3XY=3900\n        \n        Solution:\n        y = 0.613x + 13.87\n        x = 1.178y - 15.43\n        Correlation coefficient r = 0.863\n        \n        Q1-B: Sales Prediction\n        Given: Mean sales = 40 Cr, Mean advertisement = 6 Cr\n        SD sales = 10, SD advertisement = 1.5, r = 0.9\n        \n        For advertisement expenditure = 10 crores:\n        Estimated sales = 40.6 crores\n        \n        Q2-A: Hypothesis Test\n        H\u2080: \u03bc = 50, H\u2081: \u03bc \u2260 50\n        Sample: n=25, x\u0304=55, s=10\n        Z = 2.236\n        Conclusion: Reject H\u2080\n        \n        Q2-B: Quality Control\n        Before: p\u2081 = 0.05, n\u2081 = 1000\n        After: p\u2082 = 0.03, n\u2082 = 1200\n        Z = 1.897, p-value = 0.029\n        Conclusion: Significant improvement\n        ",
+          "confidence": 0.92,
+          "bbox": [
+            50,
+            100,
+            750,
+            900
+          ]
+        }
+      ],
+      "full_text": "\n        Q1-A: Regression Analysis\n        Given: n=10, \u03a3X=900, \u03a3Y=700, \u03a3X\u00b2=6360, \u03a3Y\u00b2=2860, \u03a3XY=3900\n        \n        Solution:\n        y = 0.613x + 13.87\n        x = 1.178y - 15.43\n        Correlation coefficient r = 0.863\n        \n        Q1-B: Sales Prediction\n        Given: Mean sales = 40 Cr, Mean advertisement = 6 Cr\n        SD sales = 10, SD advertisement = 1.5, r = 0.9\n        \n        For advertisement expenditure = 10 crores:\n        Estimated sales = 40.6 crores\n        \n        Q2-A: Hypothesis Test\n        H\u2080: \u03bc = 50, H\u2081: \u03bc \u2260 50\n        Sample: n=25, x\u0304=55, s=10\n        Z = 2.236\n        Conclusion: Reject H\u2080\n        \n        Q2-B: Quality Control\n        Before: p\u2081 = 0.05, n\u2081 = 1000\n        After: p\u2082 = 0.03, n\u2082 = 1200\n        Z = 1.897, p-value = 0.029\n        Conclusion: Significant improvement\n        "
+    },
+    "grading_results": {
+      "total_score": 17.5,
+      "max_total_score": 20,
+      "percentage": 87.5,
+      "question_grades": {
+        "Q1A": {
+          "score": 4.8,
+          "max_score": 5,
+          "percentage": 96,
+          "feedback": [
+            "\u2705 Regression equations are correct",
+            "\u2705 Correlation coefficient is accurate",
+            "\u2705 All calculations properly shown"
+          ]
+        },
+        "Q1B": {
+          "score": 4.5,
+          "max_score": 5,
+          "percentage": 90,
+          "feedback": [
+            "\u2705 Sales estimation is correct",
+            "\u2705 Used proper regression formula",
+            "\u26a0\ufe0f Minor rounding in final answer"
+          ]
+        },
+        "Q2A": {
+          "score": 4.2,
+          "max_score": 5,
+          "percentage": 84,
+          "feedback": [
+            "\u2705 Test statistic calculated correctly",
+            "\u2705 Proper hypothesis setup",
+            "\u26a0\ufe0f Conclusion could be more detailed"
+          ]
+        },
+        "Q2B": {
+          "score": 4.0,
+          "max_score": 5,
+          "percentage": 80,
+          "feedback": [
+            "\u2705 Z-statistic is correct",
+            "\u2705 P-value calculation accurate",
+            "\u26a0\ufe0f Statistical interpretation needs improvement"
+          ]
+        }
+      },
+      "summary": {
+        "total_questions": 4,
+        "correct_questions": 4,
+        "accuracy": 87.5,
+        "strengths": [
+          "Excellent regression analysis skills",
+          "Strong statistical calculation abilities",
+          "Good understanding of hypothesis testing"
+        ],
+        "improvements": [
+          "Provide more detailed conclusions",
+          "Improve statistical interpretation",
+          "Show more intermediate steps"
+        ]
+      }
+    }
+  }
+}

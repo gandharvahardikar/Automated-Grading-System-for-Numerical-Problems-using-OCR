@@ -1,0 +1,94 @@
+{
+  "success": true,
+  "file_id": "5fb363a3-d887-45f6-911f-535f7032b74d",
+  "paper_type": "answer",
+  "processing_results": {
+    "page_analysis": {
+      "total_regions": 4,
+      "region_types": [
+        "question",
+        "answer",
+        "answer",
+        "answer"
+      ]
+    },
+    "ocr_results": {
+      "regions": [
+        {
+          "type": "answer",
+          "text": "\" NOTER NEW YORK and the",
+          "confidence": 0.85,
+          "bbox": [
+            50,
+            100,
+            750,
+            900
+          ]
+        }
+      ],
+      "full_text": "\" NOTER NEW YORK and the"
+    },
+    "grading_results": {
+      "total_score": 17.5,
+      "max_total_score": 20,
+      "percentage": 87.5,
+      "question_grades": {
+        "Q1A": {
+          "score": 4.8,
+          "max_score": 5,
+          "percentage": 96,
+          "feedback": [
+            "\u2705 Regression equations are correct",
+            "\u2705 Correlation coefficient is accurate",
+            "\u2705 All calculations properly shown"
+          ]
+        },
+        "Q1B": {
+          "score": 4.5,
+          "max_score": 5,
+          "percentage": 90,
+          "feedback": [
+            "\u2705 Sales estimation is correct",
+            "\u2705 Used proper regression formula",
+            "\u26a0\ufe0f Minor rounding in final answer"
+          ]
+        },
+        "Q2A": {
+          "score": 4.2,
+          "max_score": 5,
+          "percentage": 84,
+          "feedback": [
+            "\u2705 Test statistic calculated correctly",
+            "\u2705 Proper hypothesis setup",
+            "\u26a0\ufe0f Conclusion could be more detailed"
+          ]
+        },
+        "Q2B": {
+          "score": 4.0,
+          "max_score": 5,
+          "percentage": 80,
+          "feedback": [
+            "\u2705 Z-statistic is correct",
+            "\u2705 P-value calculation accurate",
+            "\u26a0\ufe0f Statistical interpretation needs improvement"
+          ]
+        }
+      },
+      "summary": {
+        "total_questions": 4,
+        "correct_questions": 4,
+        "accuracy": 87.5,
+        "strengths": [
+          "Excellent regression analysis skills",
+          "Strong statistical calculation abilities",
+          "Good understanding of hypothesis testing"
+        ],
+        "improvements": [
+          "Provide more detailed conclusions",
+          "Improve statistical interpretation",
+          "Show more intermediate steps"
+        ]
+      }
+    }
+  }
+}

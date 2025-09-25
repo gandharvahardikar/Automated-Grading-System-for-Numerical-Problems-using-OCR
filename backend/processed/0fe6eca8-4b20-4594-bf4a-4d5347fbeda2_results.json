@@ -1,0 +1,62 @@
+{
+  "success": true,
+  "file_id": "0fe6eca8-4b20-4594-bf4a-4d5347fbeda2",
+  "paper_type": "answer",
+  "processing_results": {
+    "page_analysis": {
+      "total_regions": 4,
+      "region_types": [
+        "question",
+        "answer",
+        "answer",
+        "answer"
+      ]
+    },
+    "ocr_results": {
+      "regions": [
+        {
+          "type": "answer",
+          "text": null,
+          "confidence": 0.85,
+          "bbox": [
+            50,
+            100,
+            750,
+            900
+          ]
+        }
+      ],
+      "full_text": null
+    },
+    "grading_results": {
+      "total_score": 0.0,
+      "max_total_score": 20,
+      "percentage": 0.0,
+      "question_grades": {
+        "Overall": {
+          "score": 0.0,
+          "max_score": 20,
+          "percentage": 0.0,
+          "feedback": [
+            "\ud83d\udcdd Detected word count: 0",
+            "\u2139\ufe0f For detailed correctness, use \"Grade Against Model Answer Key\""
+          ]
+        }
+      },
+      "summary": {
+        "total_questions": 1,
+        "correct_questions": 0,
+        "accuracy": 0.0,
+        "strengths": [
+          "OCR text limited"
+        ],
+        "improvements": [
+          "Upload clearer images or PDF for better OCR"
+        ]
+      },
+      "pages": [
+        "0fe6eca8-4b20-4594-bf4a-4d5347fbeda2_Screenshot_2025-09-26_000046.png"
+      ]
+    }
+  }
+}

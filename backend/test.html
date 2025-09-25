@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>OCR Grading System</title>
+    <meta charset="UTF-8">
+    <style>
+        * { box-sizing: border-box; }
+        body { 
+            font-family: 'Segoe UI', sans-serif; 
+            margin: 0; 
+            padding: 20px; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container { 
+            max-width: 900px; 
+            margin: 0 auto; 
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            padding: 30px;
+        }
+        h1 { 
+            color: #333; 
+            text-align: center; 
+            margin-bottom: 30px;
+            font-size: 2.2em;
+        }
+        .upload-box {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border: 2px dashed #007bff;
+            text-align: center;
+        }
+        input[type="file"] {
+            width: 100%;
+            padding: 15px;
+            margin: 15px 0;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1em;
+        }
+        .btn { 
+            background: linear-gradient(45deg, #007bff, #0056b3);
+            color: white; 
+            padding: 15px 30px; 
+            border: none; 
+            cursor: pointer;
+            border-radius: 25px;
+            font-size: 1.1em;
+            width: 100%;
+            margin: 10px 0;
+            transition: all 0.3s;
+        }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+        .btn:disabled { background: #ccc; cursor: not-allowed; transform: none; }
+        
+        .results { 
+            margin-top: 30px; 
+            padding: 25px; 
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 5px solid #28a745;
+        }
+        .score-card {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .score-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 20px;
+            margin-top: 15px;
+        }
+        .score-item h2 { margin: 0; font-size: 2em; }
+        .score-item p { margin: 5px 0 0 0; font-size: 0.9em; opacity: 0.9; }
+        
+        .question-card {
+            background: white;
+            margin: 15px 0;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 5px solid #007bff;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .feedback-item {
+            padding: 5px 0;
+            font-size: 0.95em;
+        }
+        .feedback-good { color: #28a745; }
+        .feedback-warning { color: #ffc107; }
+        .feedback-error { color: #dc3545; }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+        .loading-bar {
+            width: 100%;
+            height: 6px;
+            background: #e9ecef;
+            border-radius: 3px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+        .loading-progress {
+            height: 100%;
+            background: linear-gradient(45deg, #007bff, #0056b3);
+            animation: loading 1.5s infinite;
+        }
+        
+        @keyframes loading {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        
+        pre {
+            background: #f1f3f4;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-size: 0.9em;
+            border: 1px solid #dee2e6;
+        }
+        
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .summary-card {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎓 OCR Automated Exam Grading System</h1>
+        
+        <div class="upload-box">
+            <h2>📝 Upload Question Paper</h2>
+            <div style="display:flex;gap:10px;align-items:center;justify-content:center">
+                <label><input type="radio" name="qMode" value="images" checked onchange="setMode('question','images')"> Images (multiple)</label>
+                <label><input type="radio" name="qMode" value="pdf" onchange="setMode('question','pdf')"> Single PDF</label>
+            </div>
+            <input type="file" id="questionInput" accept="image/*" multiple>
+            <button class="btn" onclick="uploadQuestion()">Upload Question Paper</button>
+            <div id="questionInfo" style="margin-top:8px;color:#555"></div>
+        </div>
+
+        <div class="upload-box">
+            <h2>🔑 Upload Model Answer Key</h2>
+            <div style="display:flex;gap:10px;align-items:center;justify-content:center">
+                <label><input type="radio" name="akMode" value="images" checked onchange="setMode('answerKey','images')"> Images (multiple)</label>
+                <label><input type="radio" name="akMode" value="pdf" onchange="setMode('answerKey','pdf')"> Single PDF</label>
+            </div>
+            <input type="file" id="answerKeyInput" accept="image/*" multiple>
+            <textarea id="answerKeyText" placeholder="Optional: paste answer key text here for better matching" style="width:100%;height:90px;padding:10px;border:1px solid #ddd;border-radius:8px"></textarea>
+            <button class="btn" onclick="uploadAnswerKey()">Upload Model Answer Key</button>
+            <div id="answerKeyInfo" style="margin-top:8px;color:#555"></div>
+        </div>
+
+        <div class="upload-box">
+            <h2>📄 Upload Your Answer Paper</h2>
+            <p>Select an image or PDF file of your handwritten answers</p>
+            <div style="display:flex;gap:10px;align-items:center;justify-content:center">
+                <label><input type="radio" name="stMode" value="images" checked onchange="setMode('student','images')"> Images (multiple)</label>
+                <label><input type="radio" name="stMode" value="pdf" onchange="setMode('student','pdf')"> Single PDF</label>
+            </div>
+            <input type="file" id="fileInput" accept="image/*" multiple>
+            <button class="btn" id="processBtn" onclick="uploadAndProcess()">
+                🚀 Upload & Process Paper
+            </button>
+            <button class="btn" id="gradeBtn" style="background:linear-gradient(45deg,#28a745,#148f3d)" onclick="gradeAgainstKey()">✅ Grade Against Model Answer Key</button>
+            <div id="studentInfo" style="margin-top:8px;color:#555"></div>
+        </div>
+        
+        <div id="loading" class="loading" style="display:none;">
+            <h3>🔄 Processing Your Paper...</h3>
+            <div class="loading-bar">
+                <div class="loading-progress"></div>
+            </div>
+            <p>Running OCR analysis and automatic grading...</p>
+        </div>
+        
+        <div id="results" class="results" style="display:none;"></div>
+        <div id="pages" style="display:none; margin-top:20px;"></div>
+    </div>
+
+    <script>
+        let questionMeta = null;
+        let answerKeyMeta = null;
+        let studentMeta = null;
+        let questionFiles = [];
+        let answerKeyFiles = [];
+        let studentFiles = [];
+        let modes = { question: 'images', answerKey: 'images', student: 'images' };
+
+        function setMode(section, mode) {
+            modes[section] = mode;
+            const id = section === 'question' ? 'questionInput' : section === 'answerKey' ? 'answerKeyInput' : 'fileInput';
+            const inp = document.getElementById(id);
+            if (mode === 'images') {
+                inp.accept = 'image/*';
+                inp.multiple = true;
+            } else {
+                inp.accept = '.pdf';
+                inp.multiple = false;
+            }
+        }
+
+        async function uploadQuestion() {
+            const inp = document.getElementById('questionInput');
+            const info = document.getElementById('questionInfo');
+            if (!inp.files.length) { alert('Select question paper'); return; }
+            questionFiles = [];
+            if (modes.question === 'images') {
+                // upload in order
+                let names = [];
+                for (let i = 0; i < inp.files.length; i++) {
+                    const fd = new FormData();
+                    fd.append('file', inp.files[i]);
+                    const res = await fetch('http://localhost:5000/api/upload-question', { method:'POST', body: fd });
+                    const out = await res.json();
+                    if (!out.success) { alert(out.error||'Upload failed'); return; }
+                    names.push(out.filename);
+                }
+                questionFiles = names;
+                info.textContent = `Uploaded ${names.length} images: ` + names.map((n,idx)=>`[${idx+1}] ${n}`).join(', ');
+            } else {
+                const fd = new FormData();
+                fd.append('file', inp.files[0]);
+                const res = await fetch('http://localhost:5000/api/upload-question', { method:'POST', body: fd });
+                const out = await res.json();
+                if (!out.success) { alert(out.error||'Upload failed'); return; }
+                questionMeta = out;
+                info.textContent = `Uploaded: ${out.filename}`;
+            }
+        }
+
+        async function uploadAnswerKey() {
+            const inp = document.getElementById('answerKeyInput');
+            const text = document.getElementById('answerKeyText').value || '';
+            const info = document.getElementById('answerKeyInfo');
+            if (!inp.files.length) { alert('Select model answer key'); return; }
+            answerKeyFiles = [];
+            if (modes.answerKey === 'images') {
+                let names = [];
+                for (let i = 0; i < inp.files.length; i++) {
+                    const fd = new FormData();
+                    fd.append('file', inp.files[i]);
+                    if (i === 0 && text) fd.append('answer_key_text', text);
+                    const res = await fetch('http://localhost:5000/api/upload-answer-key', { method:'POST', body: fd });
+                    const out = await res.json();
+                    if (!out.success) { alert(out.error||'Upload failed'); return; }
+                    names.push(out.filename);
+                    answerKeyMeta = out; // keep last meta for id
+                }
+                answerKeyFiles = names;
+                info.textContent = `Uploaded ${names.length} images: ` + names.map((n,idx)=>`[${idx+1}] ${n}`).join(', ') + (text ? ' (with text)' : '');
+            } else {
+                const fd = new FormData();
+                fd.append('file', inp.files[0]);
+                if (text) fd.append('answer_key_text', text);
+                const res = await fetch('http://localhost:5000/api/upload-answer-key', { method:'POST', body: fd });
+                const out = await res.json();
+                if (!out.success) { alert(out.error||'Upload failed'); return; }
+                answerKeyMeta = out;
+                info.textContent = `Uploaded: ${out.filename}${out.has_text ? ' (with text)' : ''}`;
+            }
+        }
+
+        async function uploadAndProcess() {
+            const fileInput = document.getElementById('fileInput');
+            const resultsDiv = document.getElementById('results');
+            const loadingDiv = document.getElementById('loading');
+            const processBtn = document.getElementById('processBtn');
+            const studentInfo = document.getElementById('studentInfo');
+            
+            if (!fileInput.files.length) {
+                alert('⚠️ Please select a file first!');
+                return;
+            }
+            
+            // Start processing
+            processBtn.disabled = true;
+            processBtn.textContent = '📤 Uploading...';
+            loadingDiv.style.display = 'block';
+            resultsDiv.style.display = 'none';
+            
+            try {
+                // Upload file(s)
+                let lastUpload = null;
+                studentFiles = [];
+                if (modes.student === 'images') {
+                    let names = [];
+                    for (let i = 0; i < fileInput.files.length; i++) {
+                        const fd = new FormData();
+                        fd.append('file', fileInput.files[i]);
+                        fd.append('paper_type', 'answer');
+                        const resp = await fetch('http://localhost:5000/api/upload', { method:'POST', body: fd });
+                        const out = await resp.json();
+                        if (!out.success) throw new Error(out.error);
+                        names.push(out.filename);
+                        lastUpload = out;
+                    }
+                    studentFiles = names;
+                    studentMeta = lastUpload;
+                    studentInfo.textContent = `Uploaded ${names.length} images: ` + names.map((n,idx)=>`[${idx+1}] ${n}`).join(', ');
+                } else {
+                    const formData = new FormData();
+                    formData.append('file', fileInput.files[0]);
+                    formData.append('paper_type', 'answer');
+                    const uploadResponse = await fetch('http://localhost:5000/api/upload', { method:'POST', body: formData });
+                    const uploadResult = await uploadResponse.json();
+                    if (!uploadResult.success) { throw new Error(uploadResult.error); }
+                    studentMeta = uploadResult;
+                    studentInfo.textContent = `Uploaded: ${uploadResult.filename}`;
+                }
+                
+                processBtn.textContent = '🔍 Processing...';
+                
+                // Process file
+                const processResponse = await fetch('http://localhost:5000/api/process-paper', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        filename: studentMeta.filename,
+                        file_id: studentMeta.file_id,
+                        paper_type: 'answer'
+                    })
+                });
+                
+                const processResult = await processResponse.json();
+                
+                if (!processResult.success) {
+                    throw new Error(processResult.error);
+                }
+                
+                // Display results
+                displayResults(processResult);
+                
+            } catch (error) {
+                console.error('Error:', error);
+                alert('❌ Error: ' + error.message);
+            } finally {
+                processBtn.disabled = false;
+                processBtn.textContent = '🚀 Upload & Process Paper';
+                loadingDiv.style.display = 'none';
+            }
+        }
+        
+        async function gradeAgainstKey() {
+            if (!studentMeta) { alert('Upload student answer first'); return; }
+            if (!answerKeyMeta && answerKeyFiles.length === 0) { alert('Upload model answer key first'); return; }
+            const answerKeyText = document.getElementById('answerKeyText').value || '';
+            const res = await fetch('http://localhost:5000/api/grade', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    student_filename: studentMeta.filename,
+                    student_file_id: studentMeta.file_id,
+                    answer_key_filename: answerKeyMeta ? answerKeyMeta.filename : undefined,
+                    answer_key_file_id: answerKeyMeta ? answerKeyMeta.file_id : undefined,
+                    answer_key_text: answerKeyText,
+                    student_filenames: studentFiles,
+                    answer_key_filenames: answerKeyFiles
+                })
+            });
+            const out = await res.json();
+            if (!out.success) { alert(out.error||'Grading failed'); return; }
+            // Display grading results and page previews
+            displayResults({
+                processing_results: {
+                    grading_results: out.grading_results,
+                    ocr_results: { full_text: 'Student text compared against model key (mock)'}
+                }
+            });
+            renderStudentPages();
+        }
+
+        function displayResults(processResult) {
+            const resultsDiv = document.getElementById('results');
+            const grading = processResult.processing_results.grading_results;
+            const ocrResults = processResult.processing_results.ocr_results;
+            
+            const getGrade = (percentage) => {
+                if (percentage >= 90) return 'A+';
+                if (percentage >= 80) return 'A';
+                if (percentage >= 70) return 'B';
+                if (percentage >= 60) return 'C';
+                if (percentage >= 50) return 'D';
+                return 'F';
+            };
+            
+            resultsDiv.innerHTML = `
+                <h2>🎯 Automatic Grading Results</h2>
+                
+                <div class="score-card">
+                    <h3>📊 Overall Performance</h3>
+                    <div class="score-grid">
+                        <div class="score-item">
+                            <h2>${grading.total_score}/${grading.max_total_score}</h2>
+                            <p>Total Score</p>
+                        </div>
+                        <div class="score-item">
+                            <h2>${grading.percentage.toFixed(1)}%</h2>
+                            <p>Percentage</p>
+                        </div>
+                        <div class="score-item">
+                            <h2>${getGrade(grading.percentage)}</h2>
+                            <p>Letter Grade</p>
+                        </div>
+                        <div class="score-item">
+                            <h2>${grading.percentage >= 50 ? '✅' : '❌'}</h2>
+                            <p>${grading.percentage >= 50 ? 'PASS' : 'FAIL'}</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <h3>📝 Extracted Text from Your Paper:</h3>
+                <pre>${ocrResults.full_text}</pre>
+                
+                <h3>📋 Question-by-Question Analysis:</h3>
+                ${Object.entries(grading.question_grades).map(([qId, grade]) => `
+                    <div class="question-card">
+                        <h4>${qId}: ${grade.score.toFixed(1)}/${grade.max_score} points (${grade.percentage.toFixed(1)}%) 
+                            ${grade.percentage >= 70 ? '✅' : '❌'}</h4>
+                        <strong>📝 Feedback:</strong>
+                        ${grade.feedback.map(fb => `
+                            <div class="feedback-item ${fb.includes('✅') ? 'feedback-good' : 
+                                                        fb.includes('⚠️') ? 'feedback-warning' : 'feedback-error'}">
+                                ${fb}
+                            </div>
+                        `).join('')}
+                    </div>
+                `).join('')}
+                
+                <h3>📈 Performance Summary:</h3>
+                <div class="summary-grid">
+                    <div class="summary-card">
+                        <h4>Questions Answered Correctly</h4>
+                        <h2>${grading.summary.correct_questions} / ${grading.summary.total_questions}</h2>
+                    </div>
+                    <div class="summary-card">
+                        <h4>Overall Accuracy</h4>
+                        <h2>${grading.summary.accuracy}%</h2>
+                    </div>
+                </div>
+                
+                ${grading.summary.strengths && grading.summary.strengths.length > 0 ? `
+                    <div style="background: #d4edda; padding: 15px; border-radius: 8px; margin: 15px 0; border: 1px solid #c3e6cb;">
+                        <h4 style="color: #155724; margin: 0 0 10px 0;">✅ Your Strengths:</h4>
+                        ${grading.summary.strengths.map(s => `<div style="color: #155724; margin: 5px 0;">• ${s}</div>`).join('')}
+                    </div>
+                ` : ''}
+                
+                ${grading.summary.improvements && grading.summary.improvements.length > 0 ? `
+                    <div style="background: #fff3cd; padding: 15px; border-radius: 8px; margin: 15px 0; border: 1px solid #ffeaa7;">
+                        <h4 style="color: #856404; margin: 0 0 10px 0;">🎯 Areas to Improve:</h4>
+                        ${grading.summary.improvements.map(i => `<div style="color: #856404; margin: 5px 0;">• ${i}</div>`).join('')}
+                    </div>
+                ` : ''}
+                
+                <div style="text-align: center; margin-top: 30px; padding: 20px; color: #666; border-top: 1px solid #dee2e6;">
+                    🤖 Powered by Advanced OCR Technology & AI-Based Grading System
+                </div>
+            `;
+            
+            resultsDiv.style.display = 'block';
+        }
+
+        function renderStudentPages() {
+            const pagesDiv = document.getElementById('pages');
+            if (!studentFiles || studentFiles.length === 0) {
+                pagesDiv.style.display = 'none';
+                pagesDiv.innerHTML = '';
+                return;
+            }
+            const imgs = studentFiles.map((fn, idx) => `
+                <div style="background:#fff;border:1px solid #dee2e6;border-radius:8px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,0.06);">
+                    <div style="padding:8px 12px;border-bottom:1px solid #f1f1f1;font-weight:600;color:#444;">Page ${idx+1}</div>
+                    <div style="padding:10px;text-align:center;background:#fafafa">
+                        <img src="http://localhost:5000/api/files/${fn}" alt="Page ${idx+1}" style="max-width:100%;border-radius:6px;"/>
+                    </div>
+                    <div style="padding:10px;border-top:1px solid #f1f1f1">
+                        <button class="btn" style="width:auto;padding:8px 14px" onclick="analyzePage('${fn}', ${idx})">🔎 Analyze Page</button>
+                        <div id="analysis-${idx}" style="margin-top:10px;color:#444"></div>
+                    </div>
+                </div>
+            `).join('');
+            pagesDiv.innerHTML = `
+                <h3>📄 Student Answer Pages</h3>
+                <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;">
+                    ${imgs}
+                </div>
+            `;
+            pagesDiv.style.display = 'block';
+        }
+
+        async function analyzePage(filename, idx) {
+            const container = document.getElementById(`analysis-${idx}`);
+            container.innerHTML = 'Analyzing...';
+            try {
+                const answerKeyText = document.getElementById('answerKeyText').value || '';
+                const res = await fetch('http://localhost:5000/api/analyze-page', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ filename, answer_key_text: answerKeyText })
+                });
+                const out = await res.json();
+                if (!out.success) { throw new Error(out.error||'analysis failed'); }
+                const a = out.analysis;
+                const sentences = (a.sentences||[]).map(s=>`<li>${s}</li>`).join('');
+                const symbols = (a.symbolic_hits||[]).map(h=>`<div style="margin:4px 0">${h.match?'✅':'❌'} <code>${h.formula}</code></div>`).join('');
+                const issues = (a.issues||[]).map(i=>`<div style="color:#b02a37">❌ ${i}</div>`).join('');
+                const suggs = (a.suggestions||[]).map(s=>`<div style="color:#0b7285">💡 ${s}</div>`).join('');
+                container.innerHTML = `
+                    <div style="background:#f8f9fa;border:1px solid #eee;border-radius:8px;padding:10px">
+                        ${a.semantic_match!=null ? `<div style=\"margin-bottom:6px\">🧠 Semantic similarity to key: <b>${a.semantic_match}%</b></div>` : ''}
+                        ${symbols ? `<div style=\"margin-bottom:6px\">🧮 Formula matches:<br>${symbols}</div>` : ''}
+                        ${a.explanation ? `<div style=\"margin-bottom:6px\"><b>Explanation:</b> ${a.explanation}</div>` : ''}
+                        ${issues ? `<div style=\"margin-bottom:6px\"><b>Issues:</b><br>${issues}</div>` : ''}
+                        ${suggs ? `<div><b>Suggestions:</b><br>${suggs}</div>` : ''}
+                        <div><b>Explanation (OCR):</b></div>
+                        <ul style="margin:6px 0 0 18px">${sentences}</ul>
+                    </div>
+                `;
+            } catch (e) {
+                container.innerHTML = 'Analysis failed: ' + e.message;
+            }
+        }
+    </script>
+</body>
+</html>
